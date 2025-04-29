@@ -38,7 +38,7 @@
             </div>
             <div class="page-header-image">
               <!-- 这里使用一个占位符图片，你可以替换为实际的图片路径 -->
-              <img src="@/assets/resources.jpeg" alt="资源管理背景图">
+              <img src="@/assets/resources.svg" alt="资源管理背景图">
             </div>
           </div>
         </div>
@@ -98,6 +98,7 @@
 </el-table-column>
         <el-table-column align="left" label="操作" fixed="right" :min-width="appStore.operateMinWith">
             <template #default="scope">
+            <el-button  v-auth="btnAuth.delete" type="primary" link icon="delete" @click="check(scope.row)">验证</el-button>
             <el-button v-auth="btnAuth.info" type="primary" link class="table-button" @click="getDetails(scope.row)"><el-icon style="margin-right: 5px"><InfoFilled /></el-icon>查看</el-button>
             <el-button v-auth="btnAuth.edit" type="primary" link icon="edit" class="table-button" @click="updateResourcesFunc(scope.row)">编辑</el-button>
             <el-button  v-auth="btnAuth.delete" type="primary" link icon="delete" @click="deleteRow(scope.row)">删除</el-button>
@@ -129,23 +130,62 @@
 
 <!--          HTTP-->
 
-          <el-form :model="formData" label-position="top" ref="elFormRef" :rules="rule" label-width="80px" v-if="Agreement.name==='HTTP'">
-            <el-form-item label="实例名称:" prop="name">
-            <el-input v-model="formData.name" :clearable="true" placeholder="请输入实例名称" />
-            </el-form-item>
-            <el-form-item label="URL:" prop="name">
-              <el-input v-model="formData.name" :clearable="true" placeholder="请输入URL"/>
-            </el-form-item>
-            <el-form-item label="HTTP method:" prop="HTTP method">
-              <el-input v-model="formData.name" :clearable="true" placeholder="请输入HTTP method" />
-            </el-form-item>
-            <el-form-item label="Body type:" prop="Body type">
-              <el-input v-model="formData.name" :clearable="true" placeholder="请输入Body type" />
-            </el-form-item>
-            <el-form-item label="Timeout(ms):" prop="Timeout(ms)">
-              <el-input v-model="formData.name" :clearable="true" placeholder="请输入Timeout(ms)" />
-            </el-form-item>
-<!--            <el-form-item label="协议类型:" prop="protocolType">
+      <el-form :model="formData" label-position="top" ref="elFormRef" :rules="rule" label-width="80px" v-if="Agreement.name==='HTTP'">
+        <el-form-item label="实例名称:" prop="instanceName">
+          <el-input v-model="formData.instanceName" :clearable="true" placeholder="请输入实例名称" />
+        </el-form-item>
+        <el-form-item label="URL:" prop="url">
+          <el-input v-model="formData.url" :clearable="true" placeholder="请输入URL" />
+        </el-form-item>
+        <el-form-item label="HTTP method:" prop="httpMethod">
+          <el-select v-model="formData.httpMethod" placeholder="请选择HTTP method" style="width:100%" filterable :clearable="true">
+            <el-option v-for="(item,key) in HTTPMethodOptions" :key="key" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Body type:" prop="bodyType">
+          <el-select v-model="formData.bodyType" placeholder="请选择BodyType" style="width:100%" filterable :clearable="true">
+            <el-option v-for="(item,key) in BodyTypeOptions" :key="key" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Timeout(ms):" prop="timeout">
+          <el-input v-model="formData.timeout" :clearable="true" placeholder="请输入Timeout(ms)" />
+        </el-form-item>
+
+        <div class="flex items-center gap-2">
+          <el-button type="primary" icon="edit" @click="addParameter(formData)">
+            新增HTTP headers
+          </el-button>
+        </div>
+        <el-table :data="formData.httpHeaders" style="width: 100%; margin-top: 12px">
+          <el-table-column align="left" prop="key" label="key" width="180">
+            <template #default="scope">
+              <div>
+                <el-input v-model="scope.row.key" />
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column align="left" prop="value" label="value">
+            <template #default="scope">
+              <div>
+                <el-input v-model="scope.row.value" />
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column align="left">
+            <template #default="scope">
+              <div>
+                <el-button
+                    type="danger"
+                    icon="delete"
+                    @click="deleteParameter(formData.httpHeaders, scope.$index)"
+                >
+                  删除
+                </el-button>
+              </div>
+            </template>
+          </el-table-column>
+        </el-table>
+<!--                    <el-form-item label="协议类型:" prop="protocolType">
               <el-select v-model="formData.protocolType" placeholder="请选择协议类型" style="width:100%" filterable :clearable="true">
             <el-option v-for="(item,key) in AgreementTypeOptions" :key="key" :label="item.label" :value="item.value" />
             </el-select>
@@ -155,73 +195,136 @@
             <el-option v-for="(item,key) in ResourceStatusOptions" :key="key" :label="item.label" :value="item.value" />
             </el-select>
             </el-form-item>-->
-          </el-form>
+      </el-form>
 
 
 <!--      Kafka-->
       <el-form :model="formData" label-position="top" ref="elFormRef" :rules="rule" label-width="80px" v-if="Agreement.name==='Kafka'">
-        <el-form-item label="实例名称:" prop="name">
-          <el-input v-model="formData.name" :clearable="true" placeholder="请输入实例名称" />
+        <el-form-item label="实例名称:" prop="instanceName">
+          <el-input v-model="formData.instanceName" :clearable="true" placeholder="请输入实例名称" />
         </el-form-item>
-        <el-form-item label="Kafka brokers:" prop="name">
-          <el-input v-model="formData.name" :clearable="true" placeholder="请输入Kafka brokers"/>
+        <el-form-item label="Kafka brokers:" prop="brokers">
+          <el-input v-model="formData.brokers" :clearable="true" placeholder="请输入Kafka brokers" />
         </el-form-item>
-        <el-form-item label="Topic:" prop="name">
-          <el-input v-model="formData.name" :clearable="true" placeholder="请输入Topic" />
+        <el-form-item label="Topic:" prop="topic">
+          <el-input v-model="formData.topic" :clearable="true" placeholder="请输入Topic" />
         </el-form-item>
-        <el-form-item label="SaslAuthType:" prop="SaslAuthType">
-          <el-input v-model="formData.name" :clearable="true" placeholder="请输入SaslAuthType" />
+        <el-form-item label="SaslAuthType:" prop="saslAuthType">
+          <el-input v-model="formData.saslAuthType" :clearable="true" placeholder="请输入SaslAuthType" />
         </el-form-item>
-        <el-form-item label="SaslUserName:" prop="SaslUserName">
-          <el-input v-model="formData.name" :clearable="true" placeholder="请输入SaslUserName" />
+        <el-form-item label="SaslUserName:" prop="saslUserName">
+          <el-input v-model="formData.saslUserName" :clearable="true" placeholder="请输入SaslUserName" />
         </el-form-item>
-        <el-form-item label="SaslPassword:" prop="SaslPassword">
-          <el-input v-model="formData.name" :clearable="true" placeholder="请输入SaslPassword" show-password/>
+        <el-form-item label="SaslPassword:" prop="saslPassword">
+          <el-input v-model="formData.saslPassword" :clearable="true" placeholder="请输入SaslPassword" show-password />
         </el-form-item>
       </el-form>
 
       <!--      MQTT-->
       <el-form :model="formData" label-position="top" ref="elFormRef" :rules="rule" label-width="80px" v-if="Agreement.name==='MQTT'">
-        <el-form-item label="实例名称:" prop="name">
-          <el-input v-model="formData.name" :clearable="true" placeholder="请输入实例名称" />
+        <el-form-item label="实例名称:" prop="instanceName">
+          <el-input v-model="formData.instanceName" :clearable="true" placeholder="请输入实例名称" />
         </el-form-item>
-        <el-form-item label="MQTT broker address:" prop="name">
-          <el-input v-model="formData.name" :clearable="true" placeholder="请输入MQTT broker address"/>
+        <el-form-item label="MQTT broker address:" prop="brokerAddress">
+          <el-input v-model="formData.brokerAddress" :clearable="true" placeholder="请输入MQTT broker address" />
         </el-form-item>
-        <el-form-item label="MQTT topic:" prop="name">
-          <el-input v-model="formData.name" :clearable="true" placeholder="请输入MQTT topic" />
+        <el-form-item label="MQTT topic:" prop="mqttTopic">
+          <el-input v-model="formData.mqttTopic" :clearable="true" placeholder="请输入MQTT topic" />
         </el-form-item>
-        <el-form-item label="MQTT client:" prop="MQTT client">
-          <el-input v-model="formData.name" :clearable="true" placeholder="请输入MQTT client" />
+        <el-form-item label="MQTT client:" prop="mqttClient">
+          <el-input v-model="formData.mqttClient" :clearable="true" placeholder="请输入MQTT client" />
         </el-form-item>
-        <el-form-item label="MQTT protocol version:" prop="MQTT protocol version">
-          <el-input v-model="formData.name" :clearable="true" placeholder="请输入MQTT protocol version" />
+        <el-form-item label="MQTT protocol version:" prop="protocolVersion">
+          <el-input v-model="formData.protocolVersion" :clearable="true" placeholder="请输入MQTT protocol version" />
         </el-form-item>
-        <el-form-item label="QoS:" prop="QoS">
-          <el-input v-model="formData.name" :clearable="true" placeholder="请输入QoS" show-password/>
+        <el-form-item label="QoS:" prop="qos">
+          <el-input v-model="formData.qos" :clearable="true" placeholder="请输入QoS" />
         </el-form-item>
-        <el-form-item label="Username:" prop="Username">
-          <el-input v-model="formData.name" :clearable="true" placeholder="请输入Username" show-password/>
+        <el-form-item label="Username:" prop="username">
+          <el-input v-model="formData.username" :clearable="true" placeholder="请输入Username" />
         </el-form-item>
-        <el-form-item label="Password:" prop="Password">
-          <el-input v-model="formData.name" :clearable="true" placeholder="请输入Password" show-password/>
+        <el-form-item label="Password:" prop="password">
+          <el-input v-model="formData.password" :clearable="true" placeholder="请输入Password" show-password />
         </el-form-item>
       </el-form>
     </el-drawer>
 
-    <el-drawer destroy-on-close :size="appStore.drawerSize" v-model="detailShow" :show-close="true" :before-close="closeDetailShow" title="查看">
+<!--    HTTP-->
+
+    <el-drawer destroy-on-close :size="appStore.drawerSize" v-model="detailShow" :show-close="true" :before-close="closeDetailShow" title="查看" v-if="Agreement.name==='HTTP'">
             <el-descriptions :column="1" border>
-                    <el-descriptions-item label="资源名称">
-    {{ detailFrom.name }}
-</el-descriptions-item>
-                    <el-descriptions-item label="协议类型">
-    {{ detailFrom.protocolType }}
-</el-descriptions-item>
-                    <el-descriptions-item label="资源状态">
-    {{ detailFrom.status }}
-</el-descriptions-item>
+                    <el-descriptions-item label="实例名称">
+                      {{ detailFrom.instanceName }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="URL">
+                      {{ detailFrom.url }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="请求方式">
+                      {{ detailFrom.httpMethod }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="结构类型">
+                      {{ detailFrom.bodyType }}
+                    </el-descriptions-item>
+                    <el-descriptions-item label="超时时间">
+                      {{ detailFrom.timeout }}
+                    </el-descriptions-item>
             </el-descriptions>
-        </el-drawer>
+    </el-drawer>
+
+
+    <!--    Kafka-->
+
+    <el-drawer destroy-on-close :size="appStore.drawerSize" v-model="detailShow" :show-close="true" :before-close="closeDetailShow" title="查看" v-if="Agreement.name==='Kafka'">
+      <el-descriptions :column="1" border>
+        <el-descriptions-item label="实例名称">
+          {{ detailFrom.instanceName }}
+        </el-descriptions-item>
+        <el-descriptions-item label="brokers">
+          {{ detailFrom.brokers }}
+        </el-descriptions-item>
+        <el-descriptions-item label="topic">
+          {{ detailFrom.topic }}
+        </el-descriptions-item>
+        <el-descriptions-item label="saslAuthType">
+          {{ detailFrom.saslAuthType }}
+        </el-descriptions-item>
+        <el-descriptions-item label="saslUserName">
+          {{ detailFrom.saslUserName }}
+        </el-descriptions-item>
+        <el-descriptions-item label="saslPassword">
+          {{ detailFrom.saslPassword }}
+        </el-descriptions-item>
+      </el-descriptions>
+    </el-drawer>
+
+
+    <!--    MQTT-->
+
+    <el-drawer destroy-on-close :size="appStore.drawerSize" v-model="detailShow" :show-close="true" :before-close="closeDetailShow" title="查看" v-if="Agreement.name==='MQTT'">
+      <el-descriptions :column="1" border>
+        <el-descriptions-item label="实例名称">
+          {{ detailFrom.instanceName }}
+        </el-descriptions-item>
+        <el-descriptions-item label="brokerAddress">
+          {{ detailFrom.brokerAddress }}
+        </el-descriptions-item>
+        <el-descriptions-item label="mqttTopic">
+          {{ detailFrom.mqttTopic }}
+        </el-descriptions-item>
+        <el-descriptions-item label="mqttClient">
+          {{ detailFrom.mqttClient }}
+        </el-descriptions-item>
+        <el-descriptions-item label="qos">
+          {{ detailFrom.qos }}
+        </el-descriptions-item>
+        <el-descriptions-item label="username">
+          {{ detailFrom.username }}
+        </el-descriptions-item>
+        <el-descriptions-item label="password">
+          {{ detailFrom.password }}
+        </el-descriptions-item>
+      </el-descriptions>
+    </el-drawer>
 
   </div>
 </template>
@@ -233,7 +336,7 @@ import {
   deleteResourcesByIds,
   updateResources,
   findResources,
-  getResourcesList
+  getResourcesList, getResourcesCheck
 } from '@/api/resources_iot/resources'
 
 // 全量引入格式化工具 请按需保留
@@ -252,6 +355,14 @@ import ImportExcel from '@/components/exportExcel/importExcel.vue'
 import ExportTemplate from '@/components/exportExcel/exportTemplate.vue'
 
 
+// 协议常量
+
+const Agreement=ref({
+  name: 'HTTP',
+})
+
+const Id=ref(0)
+
 defineOptions({
     name: 'Resources'
 })
@@ -268,11 +379,31 @@ const showAllQuery = ref(false)*/
 // 自动化生成的字典（可能为空）以及字段
 const ResourceStatusOptions = ref([])
 const AgreementTypeOptions = ref([])
+const HTTPMethodOptions = ref([])
+const BodyTypeOptions = ref([])
 const formData = ref({
-            name: '',
-            protocolType: '',
-            status: '',
-        })
+  instanceName: '', // 实例名称
+  url: '', // URL (HTTP)
+  httpMethod: '', // HTTP Method (HTTP)
+  bodyType: '', // Body Type (HTTP)
+  timeout: '', // Timeout (HTTP)
+  brokers: '', // Kafka Brokers (Kafka)
+  topic: '', // Topic (Kafka)
+  saslAuthType: '', // Sasl Auth Type (Kafka)
+  saslUserName: '', // Sasl User Name (Kafka)
+  saslPassword: '', // Sasl Password (Kafka)
+  brokerAddress: '', // Broker Address (MQTT)
+  mqttTopic: '', // MQTT Topic (MQTT)
+  mqttClient: '', // MQTT Client (MQTT)
+  protocolVersion: '', // Protocol Version (MQTT)
+  qos: '', // QoS (MQTT)
+  username: '', // Username (MQTT)
+  password: '', // Password (MQTT)
+  httpHeaders:[{
+    key: '',
+    value: ''
+  }]
+})
 
 
 
@@ -354,7 +485,12 @@ const handleCurrentChange = (val) => {
 
 // 查询
 const getTableData = async() => {
-  const table = await getResourcesList({ page: page.value, pageSize: pageSize.value, ...searchInfo.value })
+  const table = await getResourcesList({
+    page: page.value,
+    pageSize: pageSize.value,
+    ...searchInfo.value ,
+    name: Agreement.value.name
+  })
   if (table.code === 0) {
     tableData.value = table.data.list
     total.value = table.data.total
@@ -371,6 +507,8 @@ getTableData()
 const setOptions = async () =>{
     ResourceStatusOptions.value = await getDictFunc('ResourceStatus')
     AgreementTypeOptions.value = await getDictFunc('AgreementType')
+    HTTPMethodOptions.value = await getDictFunc('HTTPMethod')
+    BodyTypeOptions.value = await getDictFunc('BodyType')
 }
 
 // 获取需要的字典 可能为空 按需保留
@@ -382,6 +520,17 @@ const multipleSelection = ref([])
 // 多选
 const handleSelectionChange = (val) => {
     multipleSelection.value = val
+}
+
+const check=async (row) => {
+  const res = await getResourcesCheck({id:row.ID,name:Agreement.value.name})
+  if (res.code === 0) {
+    ElMessage({
+      type: 'success',
+      message: '验证成功'
+    })
+    getTableData()
+  }
 }
 
 // 删除行
@@ -434,6 +583,7 @@ const type = ref('')
 // 更新行
 const updateResourcesFunc = async(row) => {
     const res = await findResources({ ID: row.ID })
+    Id.value=row.ID
     type.value = 'update'
     if (res.code === 0) {
         formData.value = res.data
@@ -470,11 +620,126 @@ const openDialog = () => {
 const closeDialog = () => {
     dialogFormVisible.value = false
     formData.value = {
-        name: '',
-        protocolType: '',
-        status: '',
+      instanceName: '', // 实例名称
+      url: '', // URL (HTTP)
+      httpMethod: '', // HTTP Method (HTTP)
+      bodyType: '', // Body Type (HTTP)
+      timeout: '', // Timeout (HTTP)
+      brokers: '', // Kafka Brokers (Kafka)
+      topic: '', // Topic (Kafka)
+      saslAuthType: '', // Sasl Auth Type (Kafka)
+      saslUserName: '', // Sasl User Name (Kafka)
+      saslPassword: '', // Sasl Password (Kafka)
+      brokerAddress: '', // Broker Address (MQTT)
+      mqttTopic: '', // MQTT Topic (MQTT)
+      mqttClient: '', // MQTT Client (MQTT)
+      protocolVersion: '', // Protocol Version (MQTT)
+      qos: '', // QoS (MQTT)
+      username: '', // Username (MQTT)
+      password: '', // Password (MQTT)
+      httpHeaders:[{
+        key: '',
+        value: ''
+      }]
         }
 }
+
+function prepareRequestData(formData, protocolType) {
+  if (type.value === 'create') {
+    const requestData = {
+      instance_name: formData.instanceName,
+      protocol_type: protocolType,
+      config: {} // 协议特定配置
+    };
+
+    switch (protocolType) {
+      case 'HTTP':
+        requestData.config = {
+          url: formData.url,
+          http_method: formData.httpMethod,
+          body_type: formData.bodyType,
+          timeout: parseInt(formData.timeout, 10) || 0,
+          httpHeaders: formData.httpHeaders
+        };
+        break;
+
+      case 'Kafka':
+        requestData.config = {
+          brokers: formData.brokers,
+          topic: formData.topic,
+          sasl_auth_type: formData.saslAuthType,
+          sasl_user_name: formData.saslUserName,
+          sasl_password: formData.saslPassword
+        };
+        break;
+
+      case 'MQTT':
+        requestData.config = {
+          broker_address: formData.brokerAddress,
+          mqtt_topic: formData.mqttTopic,
+          mqtt_client: formData.mqttClient,
+          protocol_version: formData.protocolVersion,
+          qos: parseInt(formData.qos, 10) || 0,
+          username: formData.username,
+          password: formData.password
+        };
+        break;
+
+      default:
+        throw new Error('Unsupported protocol type');
+    }
+
+    return requestData;
+  } else if (type.value === 'update') {
+
+    const requestData = {
+      id:Id.value,
+      instance_name: formData.instanceName,
+      protocol_type: protocolType,
+      config: {} // 协议特定配置
+    };
+
+    switch (protocolType) {
+      case 'HTTP':
+        requestData.config = {
+          url: formData.url,
+          http_method: formData.httpMethod,
+          body_type: formData.bodyType,
+          timeout: parseInt(formData.timeout, 10) || 0,
+          httpHeaders: formData.httpHeaders
+        };
+        break;
+
+      case 'Kafka':
+        requestData.config = {
+          brokers: formData.brokers,
+          topic: formData.topic,
+          sasl_auth_type: formData.saslAuthType,
+          sasl_user_name: formData.saslUserName,
+          sasl_password: formData.saslPassword
+        };
+        break;
+
+      case 'MQTT':
+        requestData.config = {
+          broker_address: formData.brokerAddress,
+          mqtt_topic: formData.mqttTopic,
+          mqtt_client: formData.mqttClient,
+          protocol_version: formData.protocolVersion,
+          qos: parseInt(formData.qos, 10) || 0,
+          username: formData.username,
+          password: formData.password
+        };
+        break;
+
+      default:
+        throw new Error('Unsupported protocol type');
+    }
+
+    return requestData;
+  }
+}
+
 // 弹窗确定
 const enterDialog = async () => {
      btnLoading.value = true
@@ -483,14 +748,23 @@ const enterDialog = async () => {
               let res
               switch (type.value) {
                 case 'create':
-                  res = await createResources(formData.value)
+                {
+                  const pore =prepareRequestData(formData.value,Agreement.value.name)
+                  res = await createResources(pore)
                   break
+                }
                 case 'update':
-                  res = await updateResources(formData.value)
+                {
+                  const pore =prepareRequestData(formData.value,Agreement.value.name)
+                  res = await updateResources(pore)
                   break
+                }
                 default:
-                  res = await createResources(formData.value)
+                {
+                  const pore =prepareRequestData(formData.value,Agreement.value.name)
+                  res = await createResources(pore)
                   break
+                }
               }
               btnLoading.value = false
               if (res.code === 0) {
@@ -519,7 +793,8 @@ const openDetailShow = () => {
 // 打开详情
 const getDetails = async (row) => {
   // 打开弹窗
-  const res = await findResources({ ID: row.ID })
+  const res = await findResources({ ID: row.ID})
+  console.log(res)
   if (res.code === 0) {
     detailFrom.value = res.data
     openDetailShow()
@@ -533,11 +808,21 @@ const closeDetailShow = () => {
   detailFrom.value = {}
 }
 
-// 协议常量
+// 新增参数
+const addParameter = (form) => {
+  if (!form.httpHeaders) {
+    form.httpHeaders = []
+  }
+  form.httpHeaders.push({
+    key: '',
+    value: ''
+  })
+}
 
-const Agreement=ref({
-  name: 'HTTP',
-})
+// 删除参数
+const deleteParameter = (parameters, index) => {
+  parameters.splice(index, 1)
+}
 
 </script>
 

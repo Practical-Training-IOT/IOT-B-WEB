@@ -95,6 +95,14 @@ export const getResourcesList = (params) => {
   })
 }
 
+export const getResourcesCheck = (data) => {
+  return service({
+    url: '/resources/getResourcesCheck',
+    method: 'post',
+    data
+  })
+}
+
 // @Tags Resources
 // @Summary 不需要鉴权的resources表接口
 // @Accept application/json

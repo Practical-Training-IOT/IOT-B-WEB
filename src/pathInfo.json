@@ -47,6 +47,8 @@
   "/src/view/resources_iot/resources/resources.vue": "Resources",
   "/src/view/resources_iot/resources/resourcesForm.vue": "ResourcesForm",
   "/src/view/routerHolder.vue": "RouterHolder",
+  "/src/view/rule/ruleInfo/ruleInfo.vue": "RuleInfo",
+  "/src/view/rule/ruleInfo/ruleInfoForm.vue": "RuleInfoForm",
   "/src/view/seniorManagement/index.vue": "seniorManagement",
   "/src/view/superAdmin/api/api.vue": "Api",
   "/src/view/superAdmin/authority/authority.vue": "Authority",
