@@ -148,7 +148,7 @@
             <el-form-item label="条件:" prop="conditions">
               <el-input v-model="formData.conditions" placeholder="请输入条件" />
             </el-form-item>
-            <p>SQL语句展示: {{ formData.sqlStatement }}</p>
+            <p>SQL语句展示:SELECT  {{ formData.queryFields }} FROM {{formData.messageSource}} WHERE {{formData.conditions}}</p>
           </section>
 
           <!-- 转发方式部分 -->
@@ -164,6 +164,7 @@
                 <el-option label="asd" value="asd"></el-option>
               </el-select>
             </el-form-item>
+            <span>您可前往<router-link to="/layout/seniorManagement/resources"><b>资源管理</b></router-link>，添加您的资源</span>
           </section>
         </el-form>
       </div>
@@ -440,10 +441,16 @@ const openDialog = () => {
 const closeDialog = () => {
     dialogFormVisible.value = false
     formData.value = {
-        ruleId: undefined,
-        ruleName: '',
-        ruleDescription: '',
-        isEnabled: false,
+      ruleId: null,
+      ruleName: '',
+      ruleDescription: '',
+      isEnabled: true,
+      messageSource: '',
+      queryFields: '*',
+      conditions: '',
+      sqlStatement: '',
+      forwardMethod: '',
+      resource: ''
         }
 }
 // 弹窗确定
