@@ -1,14 +1,11 @@
 <template>
-  <div id="userLayout" class="w-full h-screen flex items-center justify-center bg-gray-100">
-    <div class="w-full max-w-6xl h-[80vh] flex flex-col md:flex-row rounded-3xl overflow-hidden shadow-lg">
-      <!-- 左侧表单区域 -->
-      <div class="w-full md:w-1/2 p-4 md:p-10 flex-grow flex flex-col justify-center space-y-4 md:space-y-6 glass-panel">
-        <div class="mb-4 md:mb-8">
-        </div>
-
-        <div>
-<!--          <img :src=$GIN_VUE_ADMIN.appLogo alt>-->
-          <!--              {{ $GIN_VUE_ADMIN.appName }}-->
+  <div id="userLayout" class="w-full h-screen flex items-center justify-center bg-cover bg-center custom-bg relative overflow-hidden" style="background-image: url('src/assets/loginback.png');">
+    <!-- Canvas 背景 -->
+    <canvas ref="canvasRef" class="absolute inset-0 w-full h-full z-0"></canvas>
+    <!-- 左侧表单区域 -->
+    <div class="w-full max-w-6xl h-[80vh] flex flex-col md:flex-row rounded-3xl overflow-hidden shadow-lg relative">
+      <div class="w-full md:w-1/2 p-4 md:p-10 flex-grow glass-panel flex flex-col justify-center space-y-4 md:space-y-6" :class="{ 'hidden': isFormHidden }">
+        <div class="mb-4 md:mb-8 text-center">
           <img
               class="w-24 mx-auto mb-6"
               :src="$GIN_VUE_ADMIN.appLogo"
@@ -23,26 +20,31 @@
             :rules="rules"
             @keyup.enter="submitForm"
         >
+          <!-- 用户名输入框 -->
           <el-form-item prop="username" class="mb-6">
             <el-input
                 v-model="loginFormData.username"
                 size="large"
-                placeholder="用户名"
+                placeholder="邮箱账户或手机号"
                 prefix-icon="user"
                 class="input-glass"
             />
           </el-form-item>
+
+          <!-- 密码输入框 -->
           <el-form-item prop="password" class="mb-8">
             <el-input
                 v-model="loginFormData.password"
                 type="password"
                 show-password
                 size="large"
-                placeholder="密码"
+                placeholder="请输入密码"
                 prefix-icon="lock"
                 class="input-glass"
             />
           </el-form-item>
+
+          <!-- 验证码输入框（如有） -->
           <el-form-item v-if="loginFormData.openCaptcha" prop="captcha" class="mb-6">
             <div class="flex gap-4">
               <el-input
@@ -64,19 +66,8 @@
                 class="custom-wave-button w-full !h-12 shadow-lg hover:shadow-xl"
                 @click="submitForm"
             >
-              登录系统
+              开始使用
             </el-button>
-
-            <!--              <el-button
-                              type="primary"
-                              size="large"
-                              class="w-full !h-12 shadow-lg hover:shadow-xl transition-all"
-                              @click="submitForm"
-                          >
-                            登录系统
-                          </el-button>-->
-
-
           </el-form-item>
 
           <el-form-item>
@@ -88,19 +79,39 @@
               首次使用？前往初始化
             </el-button>
           </el-form-item>
+
+          <!-- 新增：缩小按钮 -->
+          <el-button
+              type="default"
+              size="large"
+              class="w-full !h-12 mt-4"
+              @click="toggleFormVisibility"
+          >
+            {{ isFormHidden ? '展开表单' : '收起表单' }}
+          </el-button>
         </el-form>
       </div>
 
       <!-- 右侧图片区域 -->
-      <div class="hidden md:block w-1/2 relative">
+      <div class="hidden md:block w-1/2 relative" :class="{ 'hidden': isFormHidden }" v-if="isFormHidden===false">
         <img src="@/assets/loginright.png" alt="banner" class="w-full h-full object-cover"/>
       </div>
+
+      <!-- 浮动按钮 -->
+      <el-button
+          v-if="isFormHidden"
+          type="primary"
+          circle
+          class="fab-button absolute bottom-10 right-10 z-10"
+          @click="toggleFormVisibility"
+      >
+        +
+      </el-button>
     </div>
   </div>
   <BottomInfo class="left-0 right-0 absolute bottom-3 mx-auto w-full z-20">
   </BottomInfo>
 </template>
-
 
 
 <script setup>
@@ -169,6 +180,12 @@
     ]
   })
 
+  const isFormHidden = ref(false)
+
+  function toggleFormVisibility() {
+    isFormHidden.value = !isFormHidden.value
+  }
+
   const userStore = useUserStore()
   const login = async () => {
     return await userStore.LoginIn(loginFormData)
@@ -215,10 +232,142 @@
       }
     }
   }
+
+  import { onMounted } from 'vue'
+
+  const canvasRef = ref(null)
+
+  onMounted(() => {
+    const canvas = canvasRef.value
+    const ctx = canvas.getContext('2d')
+    let width, height
+    let stars = []
+    const STAR_COUNT = 300
+    let speed = 1
+    let mouseX = 0, mouseY = 0
+
+    function resize() {
+      width = canvas.width = window.innerWidth
+      height = canvas.height = window.innerHeight
+    }
+
+    function initStars() {
+      stars = []
+      for (let i = 0; i < STAR_COUNT; i++) {
+        let x = Math.random() * width * 2 - width
+        let y = Math.random() * height * 2 - height
+        let z = Math.random() * width + 800 // 增加初始Z值避免太靠近屏幕
+        stars.push({ x, y, z })
+      }
+    }
+
+    function project(x, y, z) {
+      const scale = width / 2 / (z + width)
+      return {
+        x: width / 2 + x * scale,
+        y: height / 2 + y * scale,
+        r: Math.max(0.5, 3 - z / 200), // 调整星星大小
+        alpha: Math.min(1, 0.7 + z / 1600) // 调整透明度
+      }
+    }
+
+    function handleMouseMove(event) {
+      mouseX = (event.clientX - width / 2) / width
+      mouseY = (event.clientY - height / 2) / height
+    }
+
+    function animate() {
+      ctx.fillStyle = 'rgba(0, 0, 20, 0.1)'
+      ctx.fillRect(0, 0, width, height)
+
+      for (let star of stars) {
+        star.z -= speed * 2
+        if (star.z <= 0) {
+          star.z += width
+        }
+
+        const perspectiveX = star.x + mouseX * star.z * 0.05
+        const perspectiveY = star.y + mouseY * star.z * 0.05
+
+        const p = project(perspectiveX, perspectiveY, star.z)
+
+        if (p.x >= 0 && p.x <= width && p.y >= 0 && p.y <= height) {
+          ctx.beginPath()
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
+          ctx.fillStyle = `rgba(255,255,255,${p.alpha})`
+          ctx.fill()
+
+          // 随机添加拖尾效果
+          if (Math.random() > 0.9) {
+            const tp = project(perspectiveX, perspectiveY, star.z + Math.random() * 5)
+            ctx.beginPath()
+            ctx.arc(tp.x, tp.y, tp.r * 0.5, 0, Math.PI * 2)
+            ctx.fillStyle = `rgba(255,255,255,${p.alpha * 0.3})`
+            ctx.fill()
+          }
+        }
+      }
+
+      requestAnimationFrame(animate)
+    }
+
+    // 初始化
+    resize()
+    initStars()
+    animate()
+
+    // 鼠标监听
+    window.addEventListener('mousemove', handleMouseMove)
+
+    // 滚轮控制速度
+    window.addEventListener('wheel', e => {
+      speed += e.deltaY * -0.0005
+      speed = Math.max(0.1, Math.min(10, speed))
+    })
+
+    // 自适应窗口
+    window.addEventListener('resize', () => {
+      resize()
+      initStars()
+    })
+  })
+
 </script>
 
-
 <style scoped>
+#userLayout {
+  background-size: cover;
+  position: relative;
+  overflow: hidden;
+}
+.glass-panel {
+  background: linear-gradient(135deg, #ffffff, #fff8e1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top-left-radius: 1.5rem;
+  border-bottom-left-radius: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  padding: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.glass-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-top-left-radius: 1.5rem;
+  border-bottom-left-radius: 1.5rem;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.4), transparent 40%);
+  z-index: 0;
+}
+
+.glass-panel > * {
+  position: relative;
+  z-index: 1;
+}
+
 :deep(.input-style) {
   --el-input-border-color: transparent;
   --el-input-bg-color: rgba(0, 0, 0, 0.05);
@@ -241,100 +390,37 @@
   opacity: 0.9;
 }
 
-.glass-panel {
-  background: linear-gradient(135deg, #ffffff, #fff8e1); /* 白色 → 浅黄色渐变 */
-  backdrop-filter: blur(12px); /* 毛玻璃效果 */
-  -webkit-backdrop-filter: blur(12px); /* Safari 兼容 */
-  border-radius: 1.5rem; /* 与父容器一致的圆角 */
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); /* 微弱阴影增强质感 */
-  padding: 2rem;
-  position: relative;
-  overflow: hidden;
-}
-
-/* 可选：增加一点装饰性光晕或内发光 */
-.glass-panel::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  border-radius: 1.5rem;
-  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.4), transparent 40%);
-  z-index: 0;
-}
-
-/* 表单内容层级提升 */
-.glass-panel > * {
-  position: relative;
-  z-index: 1;
-}
-
-/* 全局背景设置 */
 #userLayout {
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4)),
-  url("@/assets/loginback.png") no-repeat center center fixed; /* 替换为您自己的背景图片路径 */
   background-size: cover;
   position: relative;
   overflow: hidden;
 }
 
-
-@keyframes moveGradient {
-  0% { transform: translate(-50%, -50%) rotate(45deg); }
-  100% { transform: translate(-150%, -150%) rotate(45deg); }
+canvas {
+  filter: blur(0.5px);
 }
 
-.glass-panel {
-  background: linear-gradient(135deg, #ffffff, #fff8e1); /* 白色 → 浅黄色渐变 */
-  backdrop-filter: blur(12px); /* 毛玻璃效果 */
-  -webkit-backdrop-filter: blur(12px); /* Safari 兼容 */
-  /* 修改：仅左上和左下角有圆角 */
-  border-top-left-radius: 1.5rem;
-  border-bottom-left-radius: 1.5rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); /* 微弱阴影增强质感 */
-  padding: 2rem;
-  position: relative;
-  z-index: 1; /* 确保位于背景之上 */
+.fab-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  box-shadow: 0 3px 5px -1px rgba(0,0,0,.2), 0 6px 10px 0 rgba(0,0,0,.14), 0 1px 18px 0 rgba(0,0,0,.12);
+  background-color: #409EFF;
+  color: white;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* 新增：为IOT标题和下方介绍预留空间并居中 */
-.glass-panel > div:first-child {
-  margin-top: 6rem; /* 预留logo的空间 */
-  text-align: center;
+.hidden {
+  display: none;
 }
 
-/* 修改或新增：确保IOT及其描述居中 */
-.glass-panel h2, .glass-panel p {
-  text-align: center;
-}
-
-/* 可选：增加一点装饰性光晕或内发光 */
-.glass-panel::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  /* 修改：与新的圆角相匹配 */
-  border-top-left-radius: 1.5rem;
-  border-bottom-left-radius: 1.5rem;
-  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.4), transparent 40%);
-  z-index: 0;
-}
-
-/* 可选：增加一点装饰性光晕或内发光 */
-.glass-panel::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  border-radius: 1.5rem;
-  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.4), transparent 40%);
-  z-index: 0;
-}
-
-/* 表单内容层级提升 */
-.glass-panel > * {
-  position: relative;
-  z-index: 1;
+canvas {
+  background: radial-gradient(circle, rgba(10, 10, 20, 1) 0%, rgba(0, 0, 10, 1) 100%);
 }
 </style>

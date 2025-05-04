@@ -103,6 +103,14 @@ export const getResourcesCheck = (data) => {
   })
 }
 
+export const getResources = (params) => {
+  return service({
+    url: '/resources/getResources',
+    method: 'get',
+    params
+  })
+}
+
 // @Tags Resources
 // @Summary 不需要鉴权的resources表接口
 // @Accept application/json

@@ -63,6 +63,14 @@ export const updateRuleInfo = (data) => {
   })
 }
 
+export const handleSwitchChange = (data) => {
+  return service({
+    url: '/ruleInfo/handleSwitchChange',
+    method: 'post',
+    data
+  })
+}
+
 // @Tags RuleInfo
 // @Summary 用id查询ruleInfo表
 // @Security ApiKeyAuth

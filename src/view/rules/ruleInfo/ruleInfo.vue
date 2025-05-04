@@ -31,6 +31,23 @@
               <el-date-picker v-model="searchInfo.endCreatedAt" type="datetime" placeholder="结束日期" :disabled-date="time=> searchInfo.startCreatedAt ? time.getTime() < searchInfo.startCreatedAt.getTime() : false"></el-date-picker>
               </el-form-item>-->
 
+        <el-form-item label="是否开启">
+          <el-select
+              v-model="searchInfo.isEnabled"
+              clearable
+              placeholder="请选择"
+          >
+
+            <el-option
+                v-for="item in option"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+            </el-option>
+
+          </el-select>
+        </el-form-item>
+
         <el-form-item label="规则名称" prop="ruleName">
           <el-input v-model="searchInfo.ruleName" placeholder="搜索条件" />
         </el-form-item>
@@ -65,20 +82,30 @@
         @selection-change="handleSelectionChange"
         >
         <el-table-column type="selection" width="55" />
-        
-        <el-table-column sortable align="left" label="日期" prop="CreatedAt" width="180">
-            <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
-        </el-table-column>
-        
-            <el-table-column align="left" label="ruleId字段" prop="ruleId" width="120" />
-
             <el-table-column align="left" label="规则名称" prop="ruleName" width="120" />
 
             <el-table-column align="left" label="规则描述" prop="ruleDescription" width="120" />
 
-            <el-table-column align="left" label="是否显示" prop="isEnabled" width="120">
+          <el-table-column align="left" label="转发方式" prop="forwardMethod" width="120" />
+
+          <el-table-column sortable align="left" label="日期" prop="CreatedAt" width="180">
+            <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
+          </el-table-column>
+
+<!--            <el-table-column align="left" label="是否显示" prop="isEnabled" width="120">
+
     <template #default="scope">{{ formatBoolean(scope.row.isEnabled) }}</template>
-</el-table-column>
+</el-table-column>-->
+          <el-table-column align="left" label="是否显示" prop="isEnabled" width="120">
+            <template #default="scope">
+              <el-switch
+                  v-model="scope.row.isEnabled"
+                  active-color="#13ce66"
+                  inactive-color="#ff4949"
+                  @change="handleSwitchChanges(scope.row)"
+              />
+            </template>
+          </el-table-column>
         <el-table-column align="left" label="操作" fixed="right" :min-width="appStore.operateMinWith">
             <template #default="scope">
             <el-button v-auth="btnAuth.info" type="primary" link class="table-button" @click="getDetails(scope.row)"><el-icon style="margin-right: 5px"><InfoFilled /></el-icon>查看</el-button>
@@ -133,7 +160,7 @@
           </el-form-item>
 
           <!-- 条件过滤部分 -->
-          <section v-if="showConditionFilter" class="condition-section">
+          <section v-if="showConditionFilter || type==='update'" class="condition-section">
             <h3>条件过滤</h3>
             <p>(SELECT [查询字段] FROM [消息源] WHERE [条件])，多个筛选项之间取交集</p>
             <el-alert title="重要提示：修改消息源和查询字段可能会导致输出的数据格式有变化" type="warning"></el-alert>
@@ -148,22 +175,36 @@
             <el-form-item label="条件:" prop="conditions">
               <el-input v-model="formData.conditions" placeholder="请输入条件" />
             </el-form-item>
-            <p>SQL语句展示:SELECT  {{ formData.queryFields }} FROM {{formData.messageSource}} WHERE {{formData.conditions}}</p>
+            <p>SQL语句展示:<b>SELECT  {{ formData.queryFields }} FROM {{formData.messageSource}} WHERE {{formData.conditions}}</b></p>
           </section>
 
           <!-- 转发方式部分 -->
-          <section v-if="showForwardMethod" class="forward-method-section">
+          <section v-if="showForwardMethod || type==='update'" class="forward-method-section">
             <h3>转发方式</h3>
-            <el-radio-group v-model="formData.forwardMethod" class="radio-group">
-              <el-radio label="HTTP推送">HTTP推送</el-radio>
-              <el-radio label="消息队列MQTT">消息队列MQTT</el-radio>
-              <el-radio label="消息队列Kafka">消息队列Kafka</el-radio>
+            <el-radio-group v-model="formData.forwardMethod" class="radio-group" @change="changMeth">
+              <el-radio label="HTTP">HTTP推送</el-radio>
+              <el-radio label="MQTT">消息队列MQTT</el-radio>
+              <el-radio label="Kafka">消息队列Kafka</el-radio>
             </el-radio-group>
-            <el-form-item label="使用资源:" prop="resource">
+            <el-form-item label="API分组">
+              <el-select
+                  v-model="formData.resource"
+                  clearable
+                  placeholder="请选择"
+              >
+                <el-option
+                    v-for="item in resourcesOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                />
+              </el-select>
+            </el-form-item>
+<!--            <el-form-item label="使用资源:" prop="resource">
               <el-select v-model="formData.resource" placeholder="请选择资源">
                 <el-option label="asd" value="asd"></el-option>
               </el-select>
-            </el-form-item>
+            </el-form-item>-->
             <span>您可前往<router-link to="/layout/seniorManagement/resources"><b>资源管理</b></router-link>，添加您的资源</span>
           </section>
         </el-form>
@@ -171,21 +212,36 @@
     </el-drawer>
 
     <el-drawer destroy-on-close :size="appStore.drawerSize" v-model="detailShow" :show-close="true" :before-close="closeDetailShow" title="查看">
-            <el-descriptions :column="1" border>
-                    <el-descriptions-item label="ruleId字段">
-    {{ detailFrom.ruleId }}
-</el-descriptions-item>
-                    <el-descriptions-item label="规则名称">
-    {{ detailFrom.ruleName }}
-</el-descriptions-item>
-                    <el-descriptions-item label="规则描述">
-    {{ detailFrom.ruleDescription }}
-</el-descriptions-item>
-                    <el-descriptions-item label="是否显示">
-    {{ detailFrom.isEnabled }}
-</el-descriptions-item>
-            </el-descriptions>
-        </el-drawer>
+      <div class="module">
+        <!-- 基础信息 -->
+        <h3>基础信息</h3>
+        <el-descriptions :column="1" border>
+          <el-descriptions-item label="规则ID">{{ detailFrom.ID }}</el-descriptions-item>
+          <el-descriptions-item label="规则名称">{{ detailFrom.ruleName }}</el-descriptions-item>
+          <el-descriptions-item label="规则描述">{{ detailFrom.ruleDescription }}</el-descriptions-item>
+          <el-descriptions-item label="启用状态">{{ detailFrom.isEnabled ? '启用' : '停用' }}</el-descriptions-item>
+        </el-descriptions>
+      </div>
+
+      <div class="module">
+        <!-- 条件过滤部分 -->
+        <h3>条件过滤</h3>
+        <el-descriptions :column="1" border>
+          <el-descriptions-item label="消息源">{{ detailFrom.messageSource }}</el-descriptions-item>
+          <el-descriptions-item label="查询字段">{{ detailFrom.queryFields }}</el-descriptions-item>
+          <el-descriptions-item label="条件">{{ detailFrom.conditions }}</el-descriptions-item>
+        </el-descriptions>
+      </div>
+
+      <div class="module">
+        <!-- 转发方式部分 -->
+        <h3>转发方式</h3>
+        <el-descriptions :column="1" border>
+          <el-descriptions-item label="转发方式">{{ detailFrom.forwardMethod }}</el-descriptions-item>
+          <el-descriptions-item label="使用资源">{{ detailFrom.resource }}</el-descriptions-item>
+        </el-descriptions>
+      </div>
+    </el-drawer>
 
   </div>
 </template>
@@ -197,11 +253,11 @@ import {
   deleteRuleInfoByIds,
   updateRuleInfo,
   findRuleInfo,
-  getRuleInfoList
+  getRuleInfoList, handleSwitchChange
 } from '@/api/rules/ruleInfo'
 
 // 全量引入格式化工具 请按需保留
-import {formatDate, formatBoolean, getDictFunc} from '@/utils/format'
+import {formatDate, getDictFunc} from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive } from 'vue'
 // 引入按钮权限标识
@@ -214,6 +270,7 @@ import ExportExcel from '@/components/exportExcel/exportExcel.vue'
 import ImportExcel from '@/components/exportExcel/importExcel.vue'
 // 导出模板组件
 import ExportTemplate from '@/components/exportExcel/exportTemplate.vue'
+import {getResources} from "@/api/resources_iot/resources";
 
 
 defineOptions({
@@ -232,7 +289,6 @@ const showAllQuery = ref(false)
 const MessageSourceOptions=ref([])
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
-  ruleId: null,
   ruleName: '',
   ruleDescription: '',
   isEnabled: true,
@@ -428,6 +484,21 @@ const deleteRuleInfoFunc = async (row) => {
     }
 }
 
+const handleSwitchChanges=async (row) => {
+  console.log(row)
+  const res = await handleSwitchChange({status: row.isEnabled,id: row.ID})
+  if (res.code === 0) {
+    ElMessage({
+      type: 'success',
+      message: '修改成功'
+    })
+    if (tableData.value.length === 1 && page.value > 1) {
+      page.value--
+    }
+    getTableData()
+  }
+}
+
 // 弹窗控制标记
 const dialogFormVisible = ref(false)
 
@@ -441,7 +512,6 @@ const openDialog = () => {
 const closeDialog = () => {
     dialogFormVisible.value = false
     formData.value = {
-      ruleId: null,
       ruleName: '',
       ruleDescription: '',
       isEnabled: true,
@@ -482,6 +552,39 @@ const enterDialog = async () => {
       })
 }
 
+const resourcesOptions = ref([])
+const resourcesMap = ref({})
+const getGroup = async () => {
+  const res = await getResources({name: formData.value.forwardMethod})
+  if (res.code === 0) {
+    const groups = res.data
+    resourcesOptions.value = groups.map((item) => ({
+      label: item.name,
+      value: item.ID
+    }))
+    resourcesMap.value = res.data.apiGroupMap
+  }
+}
+
+const option=ref([
+  {
+    value: true,
+    label: '是'
+  },
+  {
+    value: false,
+    label: '否'
+  },
+  {
+    value: undefined,
+    label: '全部显示'
+  }
+])
+
+const changMeth= async ()=>{
+  getGroup()
+}
+
 const detailFrom = ref({})
 
 // 查看详情控制标记
@@ -497,6 +600,7 @@ const openDetailShow = () => {
 // 打开详情
 const getDetails = async (row) => {
   // 打开弹窗
+  console.log(row)
   const res = await findRuleInfo({ ID: row.ID })
   if (res.code === 0) {
     detailFrom.value = res.data
@@ -639,6 +743,27 @@ const closeDetailShow = () => {
 
 .radio-group .el-radio__label {
   color: #ffffffcc;
+}
+
+.module {
+  margin-bottom: 20px;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.module h3 {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+/* 给每个模块设置一个轻微的背景颜色 */
+.module:nth-child(odd) {
+  background-color: #f9f9f9;
+}
+
+.module:nth-child(even) {
+  background-color: #eef2f6;
 }
 </style>
 
