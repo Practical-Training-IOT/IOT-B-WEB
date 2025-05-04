@@ -5,7 +5,7 @@
 
 var child_process = require('child_process')
 
-var url = 'https://www.gin-vue-admin.com'
+var url = 'http://117.27.231.112:81'
 var cmd = ''
 switch (process.platform) {
   case 'win32':

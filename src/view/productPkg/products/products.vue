@@ -1,5 +1,14 @@
 
 <template>
+
+  <div class="product-management-container">
+    <div class="content">
+      <h2>产品管理</h2>
+      <p>在物联网平台中，某一类具有相同能力或特征的设备的合集被称为一款产品。赢创万联已经打通了市面上主流iot云平台，可以把云平台产品数据同步到本地，第一次使用请点击数据同步按钮进行数据同步。</p>
+    </div>
+    <div class="image"></div>
+  </div>
+
   <div>
     <div class="gva-search-box">
       <el-form ref="elSearchFormRef" :inline="true" :model="searchInfo" class="demo-form-inline" :rules="searchRule" @keyup.enter="onSubmit">
@@ -18,7 +27,7 @@
       </el-form-item>-->
       
             <el-form-item label="存储平台" prop="platform">
-  <el-select v-model="searchInfo.platform" clearable filterable placeholder="请选择" @clear="()=>{searchInfo.platform=undefined}">
+  <el-select v-model="searchInfo.platform" clearable filterable placeholder="云平台（全部）" @clear="()=>{searchInfo.platform=undefined}">
     <el-option v-for="(item,key) in platformTypeOptions" :key="key" :label="item.label" :value="item.value" />
   </el-select>
 </el-form-item>
@@ -67,20 +76,19 @@
     {{ filterDict(scope.row.platform,platformTypeOptions) }}
     </template>
 </el-table-column>-->
+          <el-table-column align="left" label="产品ID" prop="ID" width="120" />
+
             <el-table-column align="left" label="产品名称" prop="productName" width="120" />
 
-            <el-table-column align="left" label="所属品类" prop="category" width="120">
+
+<!--            <el-table-column align="left" label="所属品类" prop="category" width="120">
     <template #default="scope">
     {{ filterDict(scope.row.category,categoryOptions) }}
     </template>
 </el-table-column>
             <el-table-column align="left" label="选择标准品类" prop="selectCategory" width="120" />
 
-            <el-table-column align="left" label="节点类型" prop="nodeType" width="120">
-    <template #default="scope">
-    {{ filterDict(scope.row.nodeType,nodeTypeOptions) }}
-    </template>
-</el-table-column>
+
             <el-table-column align="left" label="接入网关协议" prop="gatewayProtocol" width="120">
     <template #default="scope">
     {{ filterDict(scope.row.gatewayProtocol,gatewayProtocolOptions) }}
@@ -96,13 +104,30 @@
     {{ filterDict(scope.row.networkType,networkTypeOptions) }}
     </template>
 </el-table-column>
-            <el-table-column align="left" label="工厂" prop="factory" width="120" />
+            <el-table-column align="left" label="工厂" prop="factory" width="120" />-->
 
-            <el-table-column label="产品描述" prop="productDescription" width="200">
+<!--            <el-table-column label="产品描述" prop="productDescription" width="200">
    <template #default="scope">
       [富文本内容]
    </template>
-</el-table-column>
+</el-table-column>-->
+
+          <el-table-column align="left" label="产品编号" prop="productCode" width="300" />
+
+          <el-table-column align="left" label="类型" prop="nodeType" width="120">
+            <template #default="scope">
+              {{ filterDict(scope.row.nodeType,nodeTypeOptions) }}
+            </template>
+          </el-table-column>
+
+          <el-table-column align="left" label="创建时间" prop="CreatedAt" width="250" />
+          <el-table-column align="left" label="状态" prop="productStatus" width="120" />
+
+<!--          <el-table-column label="产品描述" prop="productDescription" width="200">
+            <template #default="scope">
+              <div v-html="scope.row.productDescription"></div>
+            </template>
+          </el-table-column>-->
         <el-table-column align="left" label="操作" fixed="right" :min-width="appStore.operateMinWith">
             <template #default="scope">
             <el-button v-auth="btnAuth.info" type="primary" link class="table-button" @click="getDetails(scope.row)"><el-icon style="margin-right: 5px"><InfoFilled /></el-icon>查看</el-button>
@@ -167,9 +192,15 @@
                 </el-radio>
               </el-radio-group>
             </el-form-item>
-            <el-form-item label="选择标准品类:" prop="selectCategory">
-    <el-input v-model="formData.selectCategory" :clearable="true" placeholder="请输入选择标准品类" />
-</el-form-item>
+
+            <div v-if="formData.category === '1'">
+              <el-form-item label="选择标准品类:" prop="selectCategory">
+                <el-input v-model="formData.selectCategory" :clearable="true" placeholder="请输入选择标准品类" @click="openStandardCategoryDialog" readonly />
+              </el-form-item>
+            </div>
+
+
+
             <el-form-item label="节点类型:" prop="nodeType">
     <el-select v-model="formData.nodeType" placeholder="请选择节点类型" style="width:100%" filterable :clearable="true">
         <el-option v-for="(item,key) in nodeTypeOptions" :key="key" :label="item.label" :value="item.value" />
@@ -185,11 +216,22 @@
         <el-option v-for="(item,key) in dataFormatOptions" :key="key" :label="item.label" :value="item.value" />
     </el-select>
 </el-form-item>
-            <el-form-item label="网络类型:" prop="networkType">
+<!--            <el-form-item label="网络类型:" prop="networkType">
     <el-select v-model="formData.networkType" placeholder="请选择网络类型" style="width:100%" filterable :clearable="true">
         <el-option v-for="(item,key) in networkTypeOptions" :key="key" :label="item.label" :value="item.value" />
     </el-select>
-</el-form-item>
+</el-form-item>-->
+            <el-form-item label="网络类型:" prop="networkType">
+              <el-radio-group v-model="formData.networkType" style="display: flex; align-items: center;">
+                <el-radio
+                    v-for="(item, key) in networkTypeOptions"
+                    :key="key"
+                    :label="item.value"
+                    style="margin-right: 10px;">
+                  {{ item.label }}
+                </el-radio>
+              </el-radio-group>
+            </el-form-item>
             <el-form-item label="工厂:" prop="factory">
     <el-input v-model="formData.factory" :clearable="true" placeholder="请输入工厂" />
 </el-form-item>
@@ -233,6 +275,27 @@
 </el-descriptions-item>
             </el-descriptions>
         </el-drawer>
+
+    <!-- 标准品类选择弹窗 -->
+    <el-dialog
+      v-model="standardCategoryDialogVisible"
+      title="选择标准品类"
+      width="60%"
+      :before-close="handleStandardCategoryDialogClose"
+    >
+      <div class="standard-category-container">
+        <!-- 这里可以放置您的列表数据 -->
+        <el-table :data="standardCategoryList" style="width: 100%">
+          <el-table-column prop="name" label="品类名称" />
+          <el-table-column prop="code" label="所属场景" />
+          <el-table-column fixed="right" label="操作" width="120">
+            <template #default="scope">
+              <el-button type="primary" link @click="selectStandardCategory(scope.row)">选择</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+    </el-dialog>
 
   </div>
 </template>
@@ -297,6 +360,8 @@ const formData = ref({
             networkType: '',
             factory: '',
             productDescription: '',
+            productStatus: '',
+            productCode: '',
         })
 
 
@@ -626,9 +691,69 @@ const closeDetailShow = () => {
   detailFrom.value = {}
 }
 
+// 标准品类选择弹窗控制
+const standardCategoryDialogVisible = ref(false)
+const standardCategoryList = ref([]) // 这里可以存放您的列表数据
+
+// 打开标准品类选择弹窗
+const openStandardCategoryDialog = () => {
+  standardCategoryDialogVisible.value = true
+  // 这里可以调用您的接口获取数据
+  // getStandardCategoryList()
+}
+
+// 关闭标准品类选择弹窗
+const handleStandardCategoryDialogClose = () => {
+  standardCategoryDialogVisible.value = false
+}
+
+// 选择标准品类
+const selectStandardCategory = (row) => {
+  formData.value.selectCategory = row.name // 或者您需要的其他字段
+  standardCategoryDialogVisible.value = false
+}
 
 </script>
 
 <style>
+.product-management-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  background-color: #f5f5f5;
+}
 
+.content {
+  max-width: 60%;
+}
+
+.content h2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.content p {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #666;
+}
+
+.image {
+  width: 40%;
+  height: 150px; /* 调整高度以适应你的需求 */
+  background-image: url('src/assets/one.png'); /* 替换为你的背景图像路径 */
+  background-size: cover;
+  background-position: center;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.standard-category-container {
+  padding: 20px;
+  max-height: 500px;
+  overflow-y: auto;
+}
 </style>
+
