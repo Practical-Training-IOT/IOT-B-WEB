@@ -1,5 +1,7 @@
 {
   "/src/view/about/index.vue": "About",
+  "/src/view/alertRecordPkg/records/records.vue": "Records",
+  "/src/view/alertRecordPkg/records/recordsForm.vue": "RecordsForm",
   "/src/view/alertRulePkg/alarms/alarms.vue": "Alarms",
   "/src/view/alertRulePkg/alarms/alarmsForm.vue": "AlarmsForm",
   "/src/view/common/common.vue": "Common",
