@@ -1,4 +1,3 @@
-
 <template>
 
   <div class="product-management-container">
@@ -195,7 +194,14 @@
 
             <div v-if="formData.category === '1'">
               <el-form-item label="选择标准品类:" prop="selectCategory">
-                <el-input v-model="formData.selectCategory" :clearable="true" placeholder="请输入选择标准品类" @click="openStandardCategoryDialog" readonly />
+                <el-input
+                  v-model="formData.selectCategory"
+                  :clearable="true"
+                  placeholder="选择标准品类"
+                  @click="openStandardCategoryDialog"
+                  readonly
+                  :disabled="standardCategoryDialogVisible"
+                />
               </el-form-item>
             </div>
 
@@ -284,16 +290,26 @@
       :before-close="handleStandardCategoryDialogClose"
     >
       <div class="standard-category-container">
-        <!-- 这里可以放置您的列表数据 -->
         <el-table :data="standardCategoryList" style="width: 100%">
-          <el-table-column prop="name" label="品类名称" />
-          <el-table-column prop="code" label="所属场景" />
+          <el-table-column prop="CategoryName" label="品类名称" />
+          <el-table-column prop="Scene" label="所属场景" />
           <el-table-column fixed="right" label="操作" width="120">
             <template #default="scope">
               <el-button type="primary" link @click="selectStandardCategory(scope.row)">选择</el-button>
             </template>
           </el-table-column>
         </el-table>
+        <el-pagination
+          style="margin-top: 16px; text-align: right"
+          background
+          layout="total, sizes, prev, pager, next, jumper"
+          :current-page="standardCategoryPage"
+          :page-size="standardCategoryPageSize"
+          :page-sizes="[10, 20, 50, 100]"
+          :total="standardCategoryTotal"
+          @current-change="handleStandardCategoryPageChange"
+          @size-change="handleStandardCategoryPageSizeChange"
+        />
       </div>
     </el-dialog>
 
@@ -307,7 +323,8 @@ import {
   deleteProductsByIds,
   updateProducts,
   findProducts,
-  getProductsList
+  getProductsList,
+  getStandardCategoryList
 } from '@/api/productPkg/products'
 // 富文本组件
 import RichEdit from '@/components/richtext/rich-edit.vue'
@@ -316,7 +333,7 @@ import RichView from '@/components/richtext/rich-view.vue'
 // 全量引入格式化工具 请按需保留
 import { getDictFunc, formatDate, formatBoolean, filterDict ,filterDataSource, returnArrImg, onDownloadFile } from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { ref, reactive } from 'vue'
+import { ref, reactive, watch } from 'vue'
 // 引入按钮权限标识
 import { useBtnAuth } from '@/utils/btnAuth'
 import { useAppStore } from "@/pinia"
@@ -693,23 +710,53 @@ const closeDetailShow = () => {
 
 // 标准品类选择弹窗控制
 const standardCategoryDialogVisible = ref(false)
-const standardCategoryList = ref([]) // 这里可以存放您的列表数据
+const standardCategoryList = ref([])
+const standardCategoryPage = ref(1)
+const standardCategoryPageSize = ref(10)
+const standardCategoryTotal = ref(0)
+const standardCategoryInited = ref(false)
 
-// 打开标准品类选择弹窗
-const openStandardCategoryDialog = () => {
+// 打開彈窗（只在用戶點 el-input 時調用）
+const openStandardCategoryDialog = async () => {
   standardCategoryDialogVisible.value = true
-  // 这里可以调用您的接口获取数据
-  // getStandardCategoryList()
+  standardCategoryPage.value = 1
+  await getStandardCategoryData()
 }
 
-// 关闭标准品类选择弹窗
+// 分頁切換（只設置頁碼，不重置，不動dialog）
+const handleStandardCategoryPageChange = (val) => {
+  standardCategoryPage.value = val
+  getStandardCategoryData()
+}
+const handleStandardCategoryPageSizeChange = (val) => {
+  standardCategoryPageSize.value = val
+  standardCategoryPage.value = 1
+  getStandardCategoryData()
+}
+
+// 關閉彈窗
 const handleStandardCategoryDialogClose = () => {
   standardCategoryDialogVisible.value = false
 }
 
-// 选择标准品类
+// 請求數據
+const getStandardCategoryData = async () => {
+  const res = await getStandardCategoryList({
+    page: standardCategoryPage.value,
+    pageSize: standardCategoryPageSize.value
+  })
+  if (res.code === 0) {
+    standardCategoryList.value = res.data.list
+    standardCategoryTotal.value = res.data.total
+  } else {
+    standardCategoryList.value = []
+    standardCategoryTotal.value = 0
+  }
+}
+
+// 選擇標準品類
 const selectStandardCategory = (row) => {
-  formData.value.selectCategory = row.name // 或者您需要的其他字段
+  formData.value.selectCategory = row.CategoryName
   standardCategoryDialogVisible.value = false
 }
 

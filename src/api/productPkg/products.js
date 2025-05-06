@@ -108,3 +108,12 @@ export const getProductsPublic = () => {
     method: 'get',
   })
 }
+
+// 新增標準品類列表API
+export const getStandardCategoryList = (params) => {
+  return service({
+    url: '/products/getStandardCategoryList',
+    method: 'get',
+    params
+  })
+}
