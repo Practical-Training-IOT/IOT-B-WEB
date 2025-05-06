@@ -83,13 +83,13 @@
           </el-table-column>
 
 
-<!--        <el-table-column align="left" label="操作" fixed="right" :min-width="appStore.operateMinWith">
+        <el-table-column align="left" label="操作" fixed="right" :min-width="appStore.operateMinWith">
             <template #default="scope">
-            <el-button v-auth="btnAuth.info" type="primary" link class="table-button" @click="getDetails(scope.row)"><el-icon style="margin-right: 5px"><InfoFilled /></el-icon>查看</el-button>
-            <el-button v-auth="btnAuth.edit" type="primary" link icon="edit" class="table-button" @click="updateMyDriversFunc(scope.row)">编辑</el-button>
+<!--            <el-button v-auth="btnAuth.info" type="primary" link class="table-button" @click="getDetails(scope.row)"><el-icon style="margin-right: 5px"><InfoFilled /></el-icon>查看</el-button>
+            <el-button v-auth="btnAuth.edit" type="primary" link icon="edit" class="table-button" @click="updateMyDriversFunc(scope.row)">编辑</el-button>-->
             <el-button  v-auth="btnAuth.delete" type="primary" link icon="delete" @click="deleteRow(scope.row)">删除</el-button>
             </template>
-        </el-table-column>-->
+        </el-table-column>
         </el-table>
         <div class="gva-pagination">
             <el-pagination
