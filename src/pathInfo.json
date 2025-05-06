@@ -1,5 +1,8 @@
 {
   "/src/view/about/index.vue": "About",
+  "/src/view/advancedDetails/advancedDetails.vue": "advancedDetails",
+  "/src/view/advancedDetails/Loading.vue": "Loading",
+  "/src/view/aiPlay/aiPlay.vue": "AiPlay",
   "/src/view/alertRecordPkg/alerts/alerts.vue": "Alerts",
   "/src/view/alertRecordPkg/alerts/alertsForm.vue": "AlertsForm",
   "/src/view/alertRulePkg/alertRules/alertRules.vue": "AlertRules",
@@ -57,6 +60,8 @@
   "/src/view/rule/ruleInfo/ruleInfoForm.vue": "RuleInfoForm",
   "/src/view/rules/ruleInfo/ruleInfo.vue": "RuleInfo",
   "/src/view/rules/ruleInfo/ruleInfoForm.vue": "RuleInfoForm",
+  "/src/view/scene/scenes/scenes.vue": "Scenes",
+  "/src/view/scene/scenes/scenesForm.vue": "ScenesForm",
   "/src/view/seniorManagement/index.vue": "seniorManagement",
   "/src/view/superAdmin/api/api.vue": "Api",
   "/src/view/superAdmin/authority/authority.vue": "Authority",

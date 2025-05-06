@@ -37,7 +37,6 @@
               <p>现在选择的协议是<span class="protocol-highlight">{{Agreement.name}}</span></p>
             </div>
             <div class="page-header-image">
-              <!-- 这里使用一个占位符图片，你可以替换为实际的图片路径 -->
               <img src="@/assets/resources.svg" alt="资源管理背景图">
             </div>
           </div>
