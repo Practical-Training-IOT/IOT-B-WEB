@@ -1,13 +1,16 @@
 
 <template>
 
-  <div class="product-management-container">
-    <div class="content">
+    <div class="page-header">
+    <div class="page-header-content">
+    <div class="page-header-title">
       <h2>设备管理</h2>
       <p>物理设备要连接到平台，需要先在平台创建设备(支持单个或批量导入创建)。设备列表包含自主创建的设备和云平台同步的设备，同时支持灵活的搜索。</p>
     </div>
-    <div class="image"></div>
-  </div>
+    <div  class="page-header-image"><img src="@/assets/resources.svg" alt="资源管理背景图"></div>
+    </div>
+    </div>
+
 
   <div>
     <div class="gva-search-box">
@@ -786,4 +789,133 @@ const closeDetailShow = () => {
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
+.page-header {
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.page-header-content {
+  display: flex;
+  align-items: center;
+  padding: 24px;
+}
+
+.page-header-title {
+  flex: 1;
+}
+
+.page-header-title h1 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #303133;
+  margin-bottom: 10px;
+}
+
+.page-header-title p {
+  font-size: 14px;
+  color: #606266;
+  line-height: 1.5;
+}
+
+.page-header-image {
+  flex: 1;
+  height: 200px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1a1a1a; /* 添加背景色 */
+}
+
+.page-header-image img {
+  width: 100%;
+  height: auto;
+}
+
+.protocol-highlight {
+  font-size: 18px;
+  font-weight: bold;
+  color: red;
+}
+
+.el-drawer__body {
+  padding: 20px;
+}
+
+.el-form-item__content {
+  display: flex;
+  align-items: center;
+}
+
+.el-select,
+.el-input {
+  width: 100%;
+}
+
+.el-row {
+  margin-bottom: 0;
+  flex-wrap: wrap;
+}
+
+.el-col {
+  padding: 0 10px 20px 10px;
+}
+
+.el-form-item__label {
+  font-weight: bold;
+  color: #333;
+}
+
+.el-button {
+  margin-top: 10px;
+}
+
+.trigger-condition-box {
+  background: #fff;
+  border: 2px solid #409EFF;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px 0 rgba(64,158,255,0.08);
+  padding: 32px 24px 8px 24px;
+  margin-bottom: 32px;
+}
+
+.action-box {
+  background: #fff;
+  border: 2px dashed #67C23A;
+  border-radius: 10px;
+  min-height: 80px;
+  margin-bottom: 32px;
+  margin-top: 0;
+  padding: 24px;
+}
+
+.trigger-title {
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+
+.judge-condition-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+@media (max-width: 900px) {
+  .judge-condition-row {
+    flex-direction: column;
+    gap: 4px;
+  }
+  .judge-condition-row .el-select,
+  .judge-condition-row .el-input {
+    width: 100% !important;
+  }
+}
+
 </style>

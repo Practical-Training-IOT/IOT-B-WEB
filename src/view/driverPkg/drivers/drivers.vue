@@ -1,13 +1,22 @@
 <template>
 
-  <div class="product-management-container">
+<!--  <div class="product-management-container">
     <div class="content">
       <h2>驱动镜像</h2>
       <p>驱动镜像是用户编写程序最终打包成可下载的docker镜像，它是实体设备与物联网平台通讯的桥梁，所有的设备数据和控制指令由物联网平台下发给驱动。</p>
     </div>
     <div class="image"></div>
-  </div>
+  </div>-->
   <div>
+    <div class="page-header">
+      <div class="page-header-content">
+        <div class="page-header-title">
+          <h2>驱动镜像</h2>
+          <p>驱动镜像是用户编写程序最终打包成可下载的docker镜像，它是实体设备与物联网平台通讯的桥梁，所有的设备数据和控制指令由物联网平台下发给驱动。</p>
+        </div>
+        <div  class="page-header-image"><img src="@/assets/resources.svg" alt="资源管理背景图"></div>
+      </div>
+    </div>
 
     <div class="gva-search-box">
       <el-form ref="elSearchFormRef" :inline="true" :model="searchInfo" class="demo-form-inline" :rules="searchRule" @keyup.enter="onSubmit">
@@ -290,8 +299,12 @@ import ExportExcel from '@/components/exportExcel/exportExcel.vue'
 import ImportExcel from '@/components/exportExcel/importExcel.vue'
 // 导出模板组件
 import ExportTemplate from '@/components/exportExcel/exportTemplate.vue'
-
-
+// 导入图片
+import UIGB from '@/assets/gb28181.png'
+import UIMO from '@/assets/modbus.png'
+import UITC from '@/assets/tcp.png'
+import UIHT from '@/assets/http.png'
+import UIMQ from '@/assets/mqtt.png'
 defineOptions({
     name: 'Drivers'
 })
@@ -624,27 +637,27 @@ const closeDetailShow = () => {
 const protocolList = ref([
   {
     name: 'GB28181协议驱动',
-    icon: 'src/assets/gb28181.png',
+    icon: UIGB,
     type: 'gb28181',
   },
   {
     name: 'MODBUS TCP协议驱动',
-    icon: 'src/assets/modbus.png',
+    icon: UIMO,
     type: 'modbus'
   },
   {
     name: 'TCP协议驱动',
-    icon: 'src/assets/tcp.png',
+    icon: UITC,
     type: 'tcp'
   },
   {
     name: 'HTTP协议驱动',
-    icon: 'src/assets/http.png',
+    icon: UIHT,
     type: 'http'
   },
   {
     name: 'MQTT协议驱动',
-    icon: 'src/assets/mqtt.png',
+    icon: UIMQ,
     type: 'mqtt'
   }
 ])
@@ -787,6 +800,134 @@ const openManual = (type) => {
 .version-btn {
   background-color: #67C23A;
   color: white;
+}
+
+.page-header {
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.page-header-content {
+  display: flex;
+  align-items: center;
+  padding: 24px;
+}
+
+.page-header-title {
+  flex: 1;
+}
+
+.page-header-title h1 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #303133;
+  margin-bottom: 10px;
+}
+
+.page-header-title p {
+  font-size: 14px;
+  color: #606266;
+  line-height: 1.5;
+}
+
+.page-header-image {
+  flex: 1;
+  height: 200px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1a1a1a; /* 添加背景色 */
+}
+
+.page-header-image img {
+  width: 100%;
+  height: auto;
+}
+
+.protocol-highlight {
+  font-size: 18px;
+  font-weight: bold;
+  color: red;
+}
+
+.el-drawer__body {
+  padding: 20px;
+}
+
+.el-form-item__content {
+  display: flex;
+  align-items: center;
+}
+
+.el-select,
+.el-input {
+  width: 100%;
+}
+
+.el-row {
+  margin-bottom: 0;
+  flex-wrap: wrap;
+}
+
+.el-col {
+  padding: 0 10px 20px 10px;
+}
+
+.el-form-item__label {
+  font-weight: bold;
+  color: #333;
+}
+
+.el-button {
+  margin-top: 10px;
+}
+
+.trigger-condition-box {
+  background: #fff;
+  border: 2px solid #409EFF;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px 0 rgba(64,158,255,0.08);
+  padding: 32px 24px 8px 24px;
+  margin-bottom: 32px;
+}
+
+.action-box {
+  background: #fff;
+  border: 2px dashed #67C23A;
+  border-radius: 10px;
+  min-height: 80px;
+  margin-bottom: 32px;
+  margin-top: 0;
+  padding: 24px;
+}
+
+.trigger-title {
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+
+.judge-condition-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+@media (max-width: 900px) {
+  .judge-condition-row {
+    flex-direction: column;
+    gap: 4px;
+  }
+  .judge-condition-row .el-select,
+  .judge-condition-row .el-input {
+    width: 100% !important;
+  }
 }
 
 </style>
