@@ -196,8 +196,8 @@ class Spline {
     const vertices = []
     const colors = []
     
-    for (let j = 0; j < 120; j++) {
-      vertices.push(j / 120 * length * 2 - length, 0, 0)
+    for (let j = 0; j < 180; j++) {
+      vertices.push(j / 180 * length * 2 - length, 0, 0)
       const color = new THREE.Color(`hsl(${j * 0.6 + this.color},70%,70%)`)
       colors.push(color.r, color.g, color.b)
     }
@@ -210,8 +210,7 @@ class Spline {
     })
     
     this.mesh = new THREE.Line(this.geometry, this.material)
-    // 提高基礎速度
-    this.speed = (Math.random() + 0.1) * 0.0003
+    this.speed = (Math.random() + 0.1) * 0.0002
     scene.add(this.mesh)
   }
 }
@@ -262,10 +261,9 @@ const initThreeJS = () => {
     renderer = new THREE.WebGLRenderer({
       canvas: canvas.value,
       antialias: true,
-      alpha: true,
-      powerPreference: 'high-performance'
+      alpha: true
     })
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)) // 限制最大像素比
+    renderer.setPixelRatio(window.devicePixelRatio > 1 ? 2 : 1)
     renderer.setSize(window.innerWidth, window.innerHeight)
 
     console.log('創建場景')
@@ -294,8 +292,7 @@ const initThreeJS = () => {
 
     console.log('創建新的 splines')
     const length = 30
-    // 減少 splines 數量以提高性能
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 12; i++) {
       splines.push(new Spline(length))
     }
 
@@ -340,9 +337,8 @@ const render = (a) => {
     
     for (let j = 0; j < positions.length; j += 3) {
       const x = positions[j]
-      // 提高噪聲頻率和幅度
-      positions[j + 1] = noise2D(j * 0.04 + i - offset, a * splines[i].speed) * 7
-      positions[j + 2] = noise2D(x * 0.04 + i, a * splines[i].speed) * 7
+      positions[j + 1] = noise2D(j * 0.05 + i - offset, a * splines[i].speed) * 8
+      positions[j + 2] = noise2D(x * 0.05 + i, a * splines[i].speed) * 8
       
       positions[j + 1] *= 1 - Math.abs(x / 30)
       positions[j + 2] *= 1 - Math.abs(x / 30)
@@ -351,8 +347,7 @@ const render = (a) => {
     splines[i].geometry.attributes.position.needsUpdate = true
   }
   
-  // 提高旋轉速度
-  scene.rotation.x = a * 0.0002
+  scene.rotation.x = a * 0.0003
   
   if (isMouseDown) {
     mouseJump.x += 0.001
@@ -364,7 +359,7 @@ const render = (a) => {
     mouseJump.x -= 0.001
   }
   
-  mouseJump.x = Math.max(0, Math.min(0.06, mouseJump.x))
+  mouseJump.x = Math.max(0, Math.min(0.07, mouseJump.x))
   offset += mouseJump.x
   
   renderer.render(scene, camera)
