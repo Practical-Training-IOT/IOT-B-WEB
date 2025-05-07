@@ -15,6 +15,14 @@ export const createScenes = (data) => {
   })
 }
 
+export const enterCreateScenes = (data) => {
+  return service({
+    url: '/scenes/enterCreateScenes',
+    method: 'post',
+    data
+  })
+}
+
 // @Tags Scenes
 // @Summary 删除scenes表
 // @Security ApiKeyAuth
@@ -58,6 +66,14 @@ export const deleteScenesByIds = (params) => {
 export const updateScenes = (data) => {
   return service({
     url: '/scenes/updateScenes',
+    method: 'put',
+    data
+  })
+}
+
+export const enterUpdateScenes = (data) => {
+  return service({
+    url: '/scenes/enterUpdateScenes',
     method: 'put',
     data
   })

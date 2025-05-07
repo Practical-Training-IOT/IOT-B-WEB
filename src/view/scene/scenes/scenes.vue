@@ -94,7 +94,7 @@
                   type="primary"
                   link
                   icon="plus"
-                  @click="addScen()"
+                  @click="addScen(scope.row)"
               >
                 编辑场景
               </el-button>
@@ -148,7 +148,7 @@
         <div class="flex justify-between items-center">
           <span class="text-lg">{{ type === 'create' ? '新增' : '编辑' }}</span>
           <div>
-            <el-button :loading="btnLoading" type="primary" @click="enterDialog">确 定</el-button>
+            <el-button :loading="btnLoading" type="primary" @click="enterSceneDialog">确 定</el-button>
             <el-button @click="closeDialog">取 消</el-button>
           </div>
         </div>
@@ -356,7 +356,7 @@ import {
   deleteScenesByIds,
   updateScenes,
   findScenes,
-  getScenesList, scenesSwitchChange, getScenDevicesList, getScenFuncList
+  getScenesList, scenesSwitchChange, getScenDevicesList, getScenFuncList, enterCreateScenes, enterUpdateScenes
 } from '@/api/scene/scenes'
 // 富文本组件
 import RichEdit from '@/components/richtext/rich-edit.vue'
@@ -399,28 +399,48 @@ const ValueType=ref([])
 const ValuePeriod=ref([])
 const ActionType=ref([])
 
+// 添加星期選項
+const weekDays = ref([
+  { label: '一', value: 1 },
+  { label: '二', value: 2 },
+  { label: '三', value: 3 },
+  { label: '四', value: 4 },
+  { label: '五', value: 5 },
+  { label: '六', value: 6 },
+  { label: '日', value: 0 }
+])
+
+// 添加切換星期的函數
+const toggleWeekday = (day) => {
+  const index = formData.value.triggerWeekdays.indexOf(day)
+  if (index === -1) {
+    formData.value.triggerWeekdays.push(day)
+  } else {
+    formData.value.triggerWeekdays.splice(index, 1)
+  }
+}
+
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
-            scenename: '',
-            scenedescription: '',
-            creationtime: new Date(),
-            enabledstatus: false,
-            triggerMethod: '',
-            triggerType:'',
-            product:'',
-            device:'',
-            function:'',
-            valueType:'',
-            condition:'',
-            conditionValue:'',
-            valueCycle:'',
-            functionType:'',
-            judgeCondition: '',
-            judgeValue: '',
-            valuePeriod: '',
-            triggerTime: '',
-            triggerWeekdays: []
-        })
+  scenename: '',
+  scenedescription: '',
+  creationtime: new Date(),
+  enabledstatus: false,
+  // 觸發條件相關
+  triggerMethod: '',
+  triggerType: '',
+  product: '',
+  device: '',
+  function: '',
+  valueType: '',
+  valuePeriod: '',
+  judgeCondition: '',
+  judgeValue: '',
+  triggerTime: '',
+  triggerWeekdays: [],
+  // 動作相關
+  httpHeaders: []
+})
 
 
 
@@ -636,6 +656,8 @@ const deleteScenesFunc = async (row) => {
     }
 }
 
+const ScenesId=ref(0)
+
 // 弹窗控制标记
 const dialogFormVisible = ref(false)
 
@@ -654,50 +676,103 @@ const closeDialog = () => {
       scenedescription: '',
       creationtime: new Date(),
       enabledstatus: false,
+      // 觸發條件相關
       triggerMethod: '',
-      triggerType:'',
-      product:'',
-      deviceId:'',
-      function:'',
-      valueType:'',
-      condition:'',
-      conditionValue:'',
-      valueCycle:'',
-      functionType:'',
+      triggerType: '',
+      product: '',
+      device: '',
+      function: '',
+      valueType: '',
+      valuePeriod: '',
       judgeCondition: '',
       judgeValue: '',
-      valuePeriod: '',
       triggerTime: '',
-      triggerWeekdays: []
-        }
+      triggerWeekdays: [],
+      // 動作相關
+      httpHeaders: []
+    }
 }
 // 弹窗确定
 const enterDialog = async () => {
-     btnLoading.value = true
-     elFormRef.value?.validate( async (valid) => {
-             if (!valid) return btnLoading.value = false
-              let res
-              switch (type.value) {
-                case 'create':
-                  res = await createScenes(formData.value)
-                  break
-                case 'update':
-                  res = await updateScenes(formData.value)
-                  break
-                default:
-                  res = await createScenes(formData.value)
-                  break
-              }
-              btnLoading.value = false
-              if (res.code === 0) {
-                ElMessage({
-                  type: 'success',
-                  message: '创建/更改成功'
-                })
-                closeDialog()
-                getTableData()
-              }
+  btnLoading.value = true
+  elFormRef.value?.validate(async (valid) => {
+    if (!valid) return btnLoading.value = false
+    let res
+    switch (type.value) {
+      case 'create':
+        res = await createScenes(formData.value)
+        break
+      case 'update':
+        res = await updateScenes(formData.value)
+        break
+      default:
+        res = await createScenes(formData.value)
+        break
+    }
+    btnLoading.value = false
+    if (res.code === 0) {
+      ElMessage({
+        type: 'success',
+        message: '創建/更改成功'
       })
+      closeDialog()
+      getTableData()
+    }
+  })
+}
+
+// 場景表單確定
+const enterSceneDialog = async () => {
+  btnLoading.value = true
+  try {
+    await elFormRef.value?.validate()
+    let res
+    const sceneData = {
+      ...formData.value,
+      triggerConfig: {
+        method: formData.value.triggerMethod,
+        type: formData.value.triggerType,
+        time: formData.value.triggerTime,
+        weekdays: formData.value.triggerWeekdays,
+        product: formData.value.product,
+        device: formData.value.device,
+        function: formData.value.function,
+        valueType: formData.value.valueType,
+        valuePeriod: formData.value.valuePeriod,
+        judgeCondition: formData.value.judgeCondition,
+        judgeValue: formData.value.judgeValue
+      },
+      actions: formData.value.httpHeaders
+    }
+
+    switch (type.value) {
+      case 'create':
+        sceneData.ID = ScenesId.value
+        res = await enterCreateScenes(sceneData)
+        break
+      case 'update':
+        // 添加場景 ID
+        sceneData.ID = ScenesId.value
+        res = await enterUpdateScenes(sceneData)
+        break
+      default:
+        sceneData.ID = ScenesId.value
+        res = await enterCreateScenes(sceneData)
+        break
+    }
+    if (res.code === 0) {
+      ElMessage({
+        type: 'success',
+        message: '創建/更改成功'
+      })
+      closeDialog()
+      getTableData()
+    }
+  } catch (error) {
+    console.error('表單驗證失敗:', error)
+  } finally {
+    btnLoading.value = false
+  }
 }
 
 const detailFrom = ref({})
@@ -706,7 +781,8 @@ const detailFrom = ref({})
 const detailShow = ref(false)
 
 const dialogTitle = ref('编辑场景')
-const addScen = () => {
+const addScen = (row) => {
+  ScenesId.value=row.ID
   dialogTitle.value = '新增菜单'
   // isEdit.value = false
   setOptions()
