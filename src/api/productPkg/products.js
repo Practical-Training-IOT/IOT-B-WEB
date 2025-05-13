@@ -117,3 +117,12 @@ export const getStandardCategoryList = (params) => {
     params
   })
 }
+
+// 獲取屬性列表
+export const getPropertyList = (data) => {
+  return service({
+    url: '/products/getPropertyList',
+    method: 'get',
+    params: data
+  })
+}

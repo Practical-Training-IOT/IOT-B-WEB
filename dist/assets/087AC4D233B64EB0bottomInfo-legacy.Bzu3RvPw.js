@@ -1,0 +1,4 @@
+/*! 
+ Build based on gin-vue-admin 
+ Time : 1746843967000 */
+System.register(["./087AC4D233B64EB0index-legacy.zeCOMofI.js"],(function(t,e){"use strict";var s,n,a,c;return{setters:[function(t){s=t.c,n=t.b,a=t.T,c=t.o}],execute:function(){var e={class:"flex flex-col md:flex-row gap-2 items-center text-sm text-slate-700 dark:text-slate-500 justify-center py-2"};t("_",Object.assign({name:"BottomInfo"},{__name:"bottomInfo",setup:function(t){return function(t,l){return c(),s("div",e,[l[0]||(l[0]=n("div",{class:"text-center"},[n("span",{class:"mr-1"},"Powered by"),n("span",null,[n("a",{class:"font-bold text-active"},"IOT")])],-1)),a(t.$slots,"default"),l[1]||(l[1]=n("div",{class:"text-center"},[n("span",{class:"mr-1"},"Copyright"),n("span",null,[n("a",{class:"font-bold text-active"},"猴狗羊团队")])],-1))])}}}))}}}));

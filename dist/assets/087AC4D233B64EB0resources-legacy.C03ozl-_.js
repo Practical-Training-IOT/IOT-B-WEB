@@ -1,0 +1,4 @@
+/*! 
+ Build based on gin-vue-admin 
+ Time : 1746843967000 */
+System.register(["./087AC4D233B64EB0index-legacy.zeCOMofI.js"],(function(e,r){"use strict";var t;return{setters:[function(e){t=e.s}],execute:function(){e("c",(function(e){return t({url:"/resources/createResources",method:"post",data:e})})),e("d",(function(e){return t({url:"/resources/deleteResources",method:"delete",params:e})})),e("b",(function(e){return t({url:"/resources/deleteResourcesByIds",method:"delete",params:e})})),e("u",(function(e){return t({url:"/resources/updateResources",method:"put",data:e})})),e("f",(function(e){return t({url:"/resources/findResources",method:"get",params:e})})),e("g",(function(e){return t({url:"/resources/getResourcesList",method:"get",params:e})})),e("a",(function(e){return t({url:"/resources/getResourcesCheck",method:"post",data:e})})),e("e",(function(e){return t({url:"/resources/getResources",method:"get",params:e})}))}}}));

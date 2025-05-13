@@ -1,0 +1,4 @@
+/*! 
+ Build based on gin-vue-admin 
+ Time : 1746843967000 */
+System.register(["./087AC4D233B64EB0index-legacy.zeCOMofI.js"],(function(e,t){"use strict";var n;return{setters:[function(e){n=e.s}],execute:function(){e("c",(function(e){return n({url:"/ruleInfo/createRuleInfo",method:"post",data:e})})),e("d",(function(e){return n({url:"/ruleInfo/deleteRuleInfo",method:"delete",params:e})})),e("a",(function(e){return n({url:"/ruleInfo/deleteRuleInfoByIds",method:"delete",params:e})})),e("u",(function(e){return n({url:"/ruleInfo/updateRuleInfo",method:"put",data:e})})),e("f",(function(e){return n({url:"/ruleInfo/findRuleInfo",method:"get",params:e})})),e("g",(function(e){return n({url:"/ruleInfo/getRuleInfoList",method:"get",params:e})}))}}}));

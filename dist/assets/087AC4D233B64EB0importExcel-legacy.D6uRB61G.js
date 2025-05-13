@@ -1,0 +1,4 @@
+/*! 
+ Build based on gin-vue-admin 
+ Time : 1746843967000 */
+System.register(["./087AC4D233B64EB0index-legacy.zeCOMofI.js"],(function(e,t){"use strict";var n,r,s,c,o,u,i,a,l;return{setters:[function(e){n=e.k,r=e.g,s=e.i,c=e.o,o=e.w,u=e.f,i=e.h,a=e.v,l=e.E}],execute:function(){e("_",{__name:"importExcel",props:{templateId:{type:String,required:!0}},emits:["on-success"],setup:function(e,t){var p=t.emit,m=e,f=n().token,d=p,x="".concat("/api","/sysExportTemplate/importExcel?templateID=").concat(m.templateId),y=function(e){0===e.code?(l.success("导入成功"),d("on-success")):l.error(e.msg)};return function(e,t){var n=r("el-button"),l=r("el-upload");return c(),s(l,{action:x,"show-file-list":!1,"on-success":y,multiple:!1,headers:{"x-token":a(f)}},{default:o((function(){return[u(n,{type:"primary",icon:"upload",class:"ml-3"},{default:o((function(){return t[0]||(t[0]=[i(" 导入 ")])})),_:1})]})),_:1},8,["headers"])}}})}}}));

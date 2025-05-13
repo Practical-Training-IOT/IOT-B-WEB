@@ -1,0 +1,4 @@
+/*! 
+ Build based on gin-vue-admin 
+ Time : 1746843967000 */
+import{s as e}from"./087AC4D233B64EB0index.CO5TVuii.js";const s=s=>e({url:"/scenes/createScenes",method:"post",data:s}),t=s=>e({url:"/scenes/enterCreateScenes",method:"post",data:s}),a=s=>e({url:"/scenes/deleteScenes",method:"delete",params:s}),n=s=>e({url:"/scenes/deleteScenesByIds",method:"delete",params:s}),c=s=>e({url:"/scenes/updateScenes",method:"put",data:s}),d=s=>e({url:"/scenes/enterUpdateScenes",method:"put",data:s}),r=s=>e({url:"/scenes/findScenes",method:"get",params:s}),m=s=>e({url:"/scenes/getScenesList",method:"get",params:s}),o=s=>e({url:"/scenes/scenesSwitchChange",method:"post",data:s}),u=s=>e({url:"/scenes/getScenDevicesList",method:"get",params:s}),l=s=>e({url:"/scenes/getScenFuncList",method:"get",params:s});export{d as a,u as b,s as c,a as d,t as e,r as f,m as g,l as h,n as i,o as s,c as u};

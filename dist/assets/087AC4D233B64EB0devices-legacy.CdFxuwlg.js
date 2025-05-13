@@ -1,0 +1,4 @@
+/*! 
+ Build based on gin-vue-admin 
+ Time : 1746843967000 */
+System.register(["./087AC4D233B64EB0index-legacy.zeCOMofI.js"],(function(e,t){"use strict";var r;return{setters:[function(e){r=e.s}],execute:function(){e("d",(function(e){return r({url:"/devices/createDevices",method:"post",data:e})})),e("e",(function(e){return r({url:"/devices/deleteDevices",method:"delete",params:e})})),e("u",(function(e){return r({url:"/devices/updateDevices",method:"put",data:e})})),e("f",(function(e){return r({url:"/devices/findDevices",method:"get",params:e})})),e("g",(function(e){return r({url:"/devices/getDevicesList",method:"get",params:e})})),e("a",(function(){return r({url:"/devices/getProductGroups",method:"get"})})),e("b",(function(){return r({url:"/devices/getProductTwoGroups",method:"get"})})),e("c",(function(){return r({url:"/devices/getDriverGroups",method:"get"})}))}}}));

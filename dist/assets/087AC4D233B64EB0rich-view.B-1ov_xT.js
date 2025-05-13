@@ -1,0 +1,4 @@
+/*! 
+ Build based on gin-vue-admin 
+ Time : 1746843967000 */
+import{E as e}from"./087AC4D233B64EB0rich-edit.ylmqdvQl.js";import{a,Y as l,a2 as o,a0 as d,c as u,o as s,f as t,v as n}from"./087AC4D233B64EB0index.CO5TVuii.js";const r={class:"border border-solid border-gray-100 h-full"},m={__name:"rich-view",props:{modelValue:{type:String,default:""}},emits:["change","update:modelValue"],setup(m,{emit:i}){const c=i,v=a({readOnly:!0}),f=e=>{c("change",e),c("update:modelValue",g.value)},p=m,V=l(),g=a("");o((()=>{const e=V.value;null!=e&&e.destroy()}));const h=e=>{V.value=e,g.value=p.modelValue};return d((()=>p.modelValue),(()=>{g.value=p.modelValue})),(a,l)=>(s(),u("div",r,[t(n(e),{modelValue:g.value,"onUpdate:modelValue":l[0]||(l[0]=e=>g.value=e),class:"overflow-y-hidden mt-0.5","default-config":v.value,mode:"default",onOnCreated:h,onOnChange:f},null,8,["modelValue","default-config"])]))}};export{m as _};

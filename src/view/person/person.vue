@@ -54,15 +54,15 @@
                 >
                   <div class="flex items-center gap-2">
                     <el-icon><location /></el-icon>
-                    <span>中国·北京市·朝阳区</span>
+                    <span>中国·上海市·浦东新区</span>
                   </div>
                   <div class="flex items-center gap-2">
                     <el-icon><office-building /></el-icon>
-                    <span>北京翻转极光科技有限公司</span>
+                    <span>动物园团队</span>
                   </div>
                   <div class="flex items-center gap-2">
                     <el-icon><user /></el-icon>
-                    <span>技术部·前端事业群</span>
+                    <span>技术部</span>
                   </div>
                 </div>
               </div>

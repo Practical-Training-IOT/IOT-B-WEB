@@ -1,0 +1,4 @@
+/*! 
+ Build based on gin-vue-admin 
+ Time : 1746843967000 */
+System.register(["./087AC4D233B64EB0index-legacy.zeCOMofI.js"],(function(t,r){"use strict";var e;return{setters:[function(t){e=t.s}],execute:function(){t("c",(function(t){return e({url:"/alarms/createAlarms",method:"post",data:t})})),t("d",(function(t){return e({url:"/alarms/deleteAlarms",method:"delete",params:t})})),t("e",(function(t){return e({url:"/alarms/deleteAlarmsByIds",method:"delete",params:t})})),t("u",(function(t){return e({url:"/alarms/updateAlarms",method:"put",data:t})})),t("f",(function(t){return e({url:"/alarms/findAlarms",method:"get",params:t})})),t("g",(function(t){return e({url:"/alarms/getAlarmsList",method:"get",params:t})})),t("a",(function(t){return e({url:"/alarms/getAllProductList",method:"get",params:t})})),t("b",(function(t){return e({url:"/alarms/getEquipmentList",method:"get",params:t})}))}}}));

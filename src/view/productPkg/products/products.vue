@@ -295,9 +295,10 @@
         <el-table :data="standardCategoryList" style="width: 100%">
           <el-table-column prop="CategoryName" label="品类名称" />
           <el-table-column prop="Scene" label="所属场景" />
-          <el-table-column fixed="right" label="操作" width="120">
+          <el-table-column fixed="right" label="操作" width="200">
             <template #default="scope">
               <el-button type="primary" link @click="selectStandardCategory(scope.row)">选择</el-button>
+              <el-button type="primary" link @click="viewProperties(scope.row.CategoryName)">查看标准物模型</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -315,6 +316,42 @@
       </div>
     </el-dialog>
 
+    <!-- 属性列表弹窗 -->
+    <el-dialog
+      v-model="propertyDialogVisible"
+      title="標準功能定義"
+      width="80%"
+      destroy-on-close
+    >
+      <el-table :data="propertyList" style="width: 100%" border>
+        <el-table-column prop="name" label="功能名称" />
+        <el-table-column prop="code" label="标识符" />
+        <el-table-column prop="data_type" label="数据类型" />
+<!--        <el-table-column prop="access_mode" label="訪問模式">
+          <template #default="scope">
+            {{ scope.row.access_mode === 'R' ? '只讀' : scope.row.access_mode === 'W' ? '只寫' : '讀寫' }}
+          </template>
+        </el-table-column>-->
+        <el-table-column prop="unit" label="单位" />
+<!--        <el-table-column label="數值範圍">
+          <template #default="scope">
+            {{ scope.row.min_value }} ~ {{ scope.row.max_value }}
+          </template>
+        </el-table-column>-->
+      </el-table>
+      <div class="gva-pagination">
+        <el-pagination
+          layout="total, sizes, prev, pager, next, jumper"
+          :current-page="propertyPage"
+          :page-size="propertyPageSize"
+          :page-sizes="[10, 30, 50, 100]"
+          :total="propertyTotal"
+          @current-change="handlePropertyPageChange"
+          @size-change="handlePropertySizeChange"
+        />
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -326,7 +363,8 @@ import {
   updateProducts,
   findProducts,
   getProductsList,
-  getStandardCategoryList
+  getStandardCategoryList,
+  getPropertyList
 } from '@/api/productPkg/products'
 // 富文本组件
 import RichEdit from '@/components/richtext/rich-edit.vue'
@@ -760,6 +798,61 @@ const getStandardCategoryData = async () => {
 const selectStandardCategory = (row) => {
   formData.value.selectCategory = row.CategoryName
   standardCategoryDialogVisible.value = false
+}
+
+// 在 script setup 部分添加新的響應式變量和函數
+const propertyDialogVisible = ref(false)
+const propertyList = ref([])
+
+// 在 script setup 部分添加分頁相關的響應式變量
+const propertyPage = ref(1)
+const propertyPageSize = ref(10)
+const propertyTotal = ref(0)
+const currentCategoryName = ref('')
+
+// 修改查看屬性的方法
+const viewProperties = async (categoryName) => {
+  try {
+    currentCategoryName.value = categoryName
+    propertyPage.value = 1 // 重置頁碼
+    await getPropertyListData()
+    propertyDialogVisible.value = true
+  } catch (error) {
+    console.error('获取属性列表失败:', error)
+    ElMessage.error('获取属性列表失败')
+  }
+}
+
+// 添加獲取屬性列表數據的方法
+const getPropertyListData = async () => {
+  try {
+    const res = await getPropertyList({
+      CategoryName: currentCategoryName.value,
+      page: propertyPage.value,
+      pageSize: propertyPageSize.value
+    })
+    if (res.code === 0) {
+      propertyList.value = res.data.list
+      propertyTotal.value = res.data.total
+      propertyPage.value = res.data.page
+      propertyPageSize.value = res.data.pageSize
+    }
+  } catch (error) {
+    console.error('获取属性列表失败:', error)
+    ElMessage.error('获取属性列表失败')
+  }
+}
+
+// 添加分頁處理方法
+const handlePropertyPageChange = (val) => {
+  propertyPage.value = val
+  getPropertyListData()
+}
+
+const handlePropertySizeChange = (val) => {
+  propertyPageSize.value = val
+  propertyPage.value = 1
+  getPropertyListData()
 }
 
 </script>

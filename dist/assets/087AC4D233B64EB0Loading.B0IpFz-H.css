@@ -1,0 +1,4 @@
+/*! 
+ Build based on gin-vue-admin 
+ Time : 1746843967000 */
+.loading[data-v-8590d270]{display:flex;justify-content:center;align-items:center;padding:10px;font-size:16px;color:#666}.dot[data-v-8590d270]{display:inline-block;width:6px;height:6px;margin:0 2px;background-color:#42b983;border-radius:50%;animation:blink-8590d270 1.4s infinite ease-in-out both}.dot[data-v-8590d270]:nth-child(1){animation-delay:-.32s}.dot[data-v-8590d270]:nth-child(2){animation-delay:-.16s}@keyframes blink-8590d270{0%,80%,to{opacity:0}40%{opacity:1}}
